@@ -82,10 +82,10 @@
   function applyTheme(theme) {
     if (theme === "light") {
       document.documentElement.setAttribute("data-theme", "light");
-      themeToggleBtn.querySelector(".theme-toggle-icon").textContent = "☀️";
+      themeToggleBtn.querySelector(".theme-toggle-icon").textContent = "☀";
     } else {
       document.documentElement.removeAttribute("data-theme");
-      themeToggleBtn.querySelector(".theme-toggle-icon").textContent = "🌙";
+      themeToggleBtn.querySelector(".theme-toggle-icon").textContent = "☾";
     }
     localStorage.setItem(STORAGE_KEYS.theme, theme);
   }
@@ -153,7 +153,13 @@
 
       const badge = document.createElement("div");
       badge.className = "level-badge";
-      badge.textContent = p.unlocked ? (p.completed ? "✓" : level.id) : "🔒";
+      if (!p.unlocked) {
+        const lockIcon = document.createElement("span");
+        lockIcon.className = "lock-icon";
+        badge.appendChild(lockIcon);
+      } else {
+        badge.textContent = p.completed ? "✓" : level.id;
+      }
 
       const info = document.createElement("div");
       info.className = "level-info";
@@ -393,7 +399,7 @@
 
     const feedbackBox = document.getElementById("feedback-box");
     feedbackBox.className = "feedback-box " + (isCorrect ? "correct" : "incorrect");
-    let html = isCorrect ? "✅ Верно!" : "❌ Неверно.";
+    let html = isCorrect ? "✓ Верно!" : "✗ Неверно.";
     if (!isCorrect && question.type === "input") {
       html += " Правильный ответ: " + question.answer[0] + ".";
     } else if (!isCorrect && question.type === "choice") {
@@ -442,10 +448,41 @@
     renderResults(level, scorePct, passed);
   }
 
+  function launchConfetti() {
+    const colors = ["#ff3b6b", "#ffb84d", "#35d491", "#4fd1ff", "#7c5cff", "#ff8a5c"];
+    const container = document.createElement("div");
+    container.className = "confetti-container";
+    document.body.appendChild(container);
+
+    const count = 110;
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement("span");
+      piece.className = "confetti-piece";
+      piece.style.left = Math.random() * 100 + "vw";
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2.2 + Math.random() * 1.8) + "s";
+      piece.style.animationDelay = Math.random() * 0.5 + "s";
+      piece.style.setProperty("--rot", Math.random() * 360 + 180 + "deg");
+      piece.style.setProperty("--drift", Math.random() * 160 - 80 + "px");
+      const size = 6 + Math.random() * 6;
+      piece.style.width = size + "px";
+      piece.style.height = size * 0.4 + "px";
+      container.appendChild(piece);
+    }
+
+    setTimeout(function () {
+      container.remove();
+    }, 4500);
+  }
+
   function renderResults(level, scorePct, passed) {
     contentPanel.innerHTML = "";
     const wrap = document.createElement("div");
     wrap.className = "results-card";
+
+    if (passed) {
+      launchConfetti();
+    }
 
     const circle = document.createElement("div");
     circle.className = "results-score-circle " + (passed ? "passed" : "failed");
