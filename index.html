@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HTML/CSS Симулятор — обучение и тесты</title>
+  <title>Канцелярия Тегов — тренажёр вёрстки и делопроизводства</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -12,22 +12,76 @@
   <!-- Приветственное окно -->
   <div id="welcome-overlay" class="overlay">
     <div class="welcome-card">
-      <div class="welcome-logo">&lt;/&gt;</div>
-      <h1>Добро пожаловать в тренажёр!</h1>
-      <p>Изучайте основы HTML и CSS, а заодно проверьте знание документооборота РФ. Проходите уровни по нарастанию сложности и зарабатывайте баллы.</p>
-      <form id="welcome-form">
-        <label for="nickname-input">Как вас называть?</label>
-        <input
-          id="nickname-input"
-          type="text"
-          maxlength="20"
-          placeholder="Введите никнейм"
-          autocomplete="off"
-          required
-        />
-        <button type="submit" class="btn btn-primary">Начать обучение</button>
-      </form>
-      <p class="welcome-hint">Никнейм сохранится только в этом браузере.</p>
+      <div class="welcome-progress" aria-hidden="true">
+        <span class="progress-dot active" data-step="1"></span>
+        <span class="progress-dot" data-step="2"></span>
+      </div>
+
+      <!-- Шаг 1: знакомство с сайтом -->
+      <section class="welcome-step" data-step="1">
+        <div class="welcome-logo">&lt;/&gt;</div>
+        <h1>Канцелярия Тегов</h1>
+        <p class="welcome-typewriter">
+          <span id="typewriter-text"></span><span class="typewriter-cursor">|</span>
+        </p>
+
+        <div class="feature-chips">
+          <div class="feature-chip">
+            <span class="chip-icon chip-html">&lt;/&gt;</span>
+            <span>HTML</span>
+          </div>
+          <div class="feature-chip">
+            <span class="chip-icon chip-css">{ }</span>
+            <span>CSS</span>
+          </div>
+          <div class="feature-chip">
+            <span class="chip-icon chip-doc">№</span>
+            <span>Делопроизводство РФ</span>
+          </div>
+        </div>
+
+        <p class="welcome-subtext">Три уровня сложности, тесты с выбором ответа и вписыванием — прокачайте вёрстку и канцелярскую грамотность разом.</p>
+
+        <button id="welcome-next-btn" class="btn btn-primary" type="button">Далее →</button>
+      </section>
+
+      <!-- Шаг 2: оформление "личного дела" -->
+      <section class="welcome-step hidden" data-step="2">
+        <h1>Заведём личное дело</h1>
+        <p class="welcome-subtext">Представьтесь — мы зарегистрируем вас в системе тренажёра.</p>
+
+        <div class="id-card">
+          <div class="id-card-avatar" id="id-avatar">?</div>
+          <div class="id-card-info">
+            <div class="id-card-label">Обучающийся</div>
+            <div class="id-card-name" id="id-name-preview">Ваш никнейм</div>
+            <div class="id-card-number" id="id-number-preview">Дело № —</div>
+          </div>
+        </div>
+
+        <form id="welcome-form">
+          <label for="nickname-input">Никнейм</label>
+          <input
+            id="nickname-input"
+            type="text"
+            maxlength="20"
+            placeholder="Введите никнейм"
+            autocomplete="off"
+            required
+          />
+          <div class="input-counter"><span id="nickname-counter">0</span>/20</div>
+          <div class="welcome-form-actions">
+            <button type="button" id="welcome-back-btn" class="btn btn-ghost">← Назад</button>
+            <button type="submit" class="btn btn-primary" id="welcome-submit-btn">Оформить и начать</button>
+          </div>
+        </form>
+        <p class="welcome-hint">Никнейм сохранится только в этом браузере.</p>
+      </section>
+
+      <!-- Анимация "штампа" при подтверждении -->
+      <div id="stamp-overlay" class="stamp-overlay hidden" aria-hidden="true">
+        <div class="stamp">Принято<br />в работу</div>
+      </div>
     </div>
   </div>
 
@@ -36,12 +90,12 @@
     <header class="topbar">
       <div class="brand">
         <span class="brand-icon">&lt;/&gt;</span>
-        <span class="brand-title">HTML/CSS Симулятор</span>
+        <span class="brand-title">Канцелярия Тегов</span>
       </div>
       <div class="topbar-right">
         <span class="greeting">Привет, <b id="user-name">Гость</b>!</span>
         <button id="theme-toggle" class="theme-toggle" type="button" title="Переключить тему" aria-label="Переключить тему">
-          <span class="theme-toggle-icon">🌙</span>
+          <span class="theme-toggle-icon">☾</span>
         </button>
         <button id="reset-user" class="btn btn-ghost" type="button">Сменить пользователя</button>
       </div>
@@ -63,7 +117,7 @@
     </main>
 
     <footer class="app-footer">
-      <p>Тренажёр по основам HTML/CSS и документообороту РФ · учебный проект</p>
+      <p>«Канцелярия Тегов» · тренажёр по основам HTML/CSS и документообороту РФ · учебный проект</p>
     </footer>
   </div>
 

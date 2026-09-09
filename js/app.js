@@ -33,6 +33,26 @@
   const contentPanel = document.getElementById("content-panel");
   const totalScoreValueEl = document.getElementById("total-score-value");
 
+  const welcomeSteps = document.querySelectorAll(".welcome-step");
+  const progressDots = document.querySelectorAll(".progress-dot");
+  const welcomeNextBtn = document.getElementById("welcome-next-btn");
+  const welcomeBackBtn = document.getElementById("welcome-back-btn");
+  const welcomeSubmitBtn = document.getElementById("welcome-submit-btn");
+  const typewriterTextEl = document.getElementById("typewriter-text");
+  const idAvatarEl = document.getElementById("id-avatar");
+  const idNamePreviewEl = document.getElementById("id-name-preview");
+  const idNumberPreviewEl = document.getElementById("id-number-preview");
+  const nicknameCounterEl = document.getElementById("nickname-counter");
+  const stampOverlayEl = document.getElementById("stamp-overlay");
+
+  const TYPEWRITER_PHRASES = [
+    "Освой теги <h1> и <div>",
+    "Разберись во Flexbox и Grid",
+    "Узнай, чем приказ отличается от протокола",
+    "Заполни номенклатуру дел без ошибок",
+    "Стань экспертом вёрстки и делопроизводства",
+  ];
+
   /* ===================== Инициализация ===================== */
 
   function init() {
@@ -43,14 +63,29 @@
     } else {
       welcomeOverlay.classList.remove("hidden");
       appEl.classList.add("hidden");
+      goToWelcomeStep(1);
+      startTypewriter();
     }
+
+    welcomeNextBtn.addEventListener("click", function () {
+      goToWelcomeStep(2);
+      idNumberPreviewEl.textContent = "Дело № " + generateDocNumber();
+      nicknameInput.focus();
+    });
+
+    welcomeBackBtn.addEventListener("click", function () {
+      goToWelcomeStep(1);
+    });
+
+    nicknameInput.addEventListener("input", function () {
+      updateIdCardPreview(nicknameInput.value);
+    });
 
     welcomeForm.addEventListener("submit", function (e) {
       e.preventDefault();
       const value = nicknameInput.value.trim();
       if (!value) return;
-      localStorage.setItem(STORAGE_KEYS.nickname, value);
-      startApp(value);
+      confirmRegistration(value);
     });
 
     themeToggleBtn.addEventListener("click", toggleTheme);
@@ -60,6 +95,74 @@
         location.reload();
       }
     });
+  }
+
+  function goToWelcomeStep(step) {
+    welcomeSteps.forEach(function (el) {
+      el.classList.toggle("hidden", Number(el.dataset.step) !== step);
+    });
+    progressDots.forEach(function (dot) {
+      dot.classList.toggle("active", Number(dot.dataset.step) === step);
+    });
+  }
+
+  function startTypewriter() {
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function tick() {
+      const phrase = TYPEWRITER_PHRASES[phraseIndex];
+      charIndex += deleting ? -1 : 1;
+      typewriterTextEl.textContent = phrase.slice(0, charIndex);
+
+      let delay = deleting ? 35 : 55;
+      if (!deleting && charIndex === phrase.length) {
+        delay = 1400;
+        deleting = true;
+      } else if (deleting && charIndex === 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % TYPEWRITER_PHRASES.length;
+        delay = 300;
+      }
+      setTimeout(tick, delay);
+    }
+
+    tick();
+  }
+
+  function hashHue(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * 31 + str.charCodeAt(i)) % 360;
+    }
+    return hash < 0 ? hash + 360 : hash;
+  }
+
+  function updateIdCardPreview(value) {
+    const trimmed = value.trim();
+    nicknameCounterEl.textContent = value.length;
+    idNamePreviewEl.textContent = trimmed || "Ваш никнейм";
+    idAvatarEl.textContent = trimmed ? trimmed[0].toUpperCase() : "?";
+    const hue = trimmed ? hashHue(trimmed) : 245;
+    idAvatarEl.style.background = "linear-gradient(135deg, hsl(" + hue + ", 80%, 60%), hsl(" + ((hue + 60) % 360) + ", 80%, 55%))";
+  }
+
+  function generateDocNumber() {
+    const year = new Date().getFullYear();
+    const code = Math.floor(10 + Math.random() * 89);
+    return code + "-ТГ/" + year;
+  }
+
+  function confirmRegistration(nickname) {
+    welcomeSubmitBtn.disabled = true;
+    stampOverlayEl.classList.remove("hidden");
+    setTimeout(function () {
+      localStorage.setItem(STORAGE_KEYS.nickname, nickname);
+      startApp(nickname);
+      stampOverlayEl.classList.add("hidden");
+      welcomeSubmitBtn.disabled = false;
+    }, 850);
   }
 
   function startApp(nickname) {
